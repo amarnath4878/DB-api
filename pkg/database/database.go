@@ -25,7 +25,7 @@ func New(address, username, pwd, port, database string) *Database {
 	}
 }
 func (db *Database) Connect() *sql.DB {
-	conn, err := sql.Open("mysql", "root:Shravan@123#@tcp(localhost:8808)/user")
+	conn, err := sql.Open("mysql", "root:Amarnath99@@tcp(localhost:3306)/table")
 	if err != nil {
 		log.Println(err)
 	}

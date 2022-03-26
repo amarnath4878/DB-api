@@ -8,8 +8,7 @@ import (
 	"log"
 	"net/http"
 
-	"pkg/database"
-
+	"api.go/pkg/database"
 	"github.com/gorilla/mux"
 )
 
@@ -18,13 +17,13 @@ var dbConn *sql.DB
 type User struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
-	Mobile    int64  `json:"mobileNumber"`
+	Mobile    string `json:"mobileNumber"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
 }
 
 func init() {
-	db := database.New("localhost", "root", "Shravan@123#", "8808", "gouser")
+	db := database.New("localhost", "root", "Amarnarh99@", "3306", "table")
 	dbConn = db.Connect()
 	errPing := dbConn.Ping()
 	if errPing != nil {
@@ -34,17 +33,10 @@ func init() {
 
 func main() {
 	router := mux.NewRouter()
-
-	// Route handles & endpoints
-
 	router.HandleFunc("/", HomePageHandler).Methods(http.MethodGet)
-
-	// Create a movie
-	router.HandleFunc("/Signup", SignUpHandler).Methods(http.MethodPost)
-
-	// serve the app
-	fmt.Println("Server at 8080")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	router.HandleFunc("/SignUp", SignUpHandler).Methods(http.MethodPost)
+	fmt.Println("Server at 1119")
+	log.Fatal(http.ListenAndServe(":1119", router))
 }
 
 func HomePageHandler(w http.ResponseWriter, r *http.Request) {
@@ -59,8 +51,10 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	errJson := json.Unmarshal(body, &user)
 	if errJson != nil {
-		log.Fatalln(errJson)
+		log.Println(errJson)
 	}
+	stmt, _ := dbConn.Prepare("INSERT INTO employee(firstName,lastName,email,mobileNumber,password) values(?,?,?,?,?)")
+	result, _ := stmt.Exec(&user.FirstName, &user.LastName, &user.Email, &user.Mobile, &user.Password)
 	w.WriteHeader(http.StatusAccepted)
-	fmt.Fprint(w, user)
+	fmt.Fprint(w, result)
 }
